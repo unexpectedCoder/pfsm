@@ -15,15 +15,17 @@ where T: State + Debug + Clone + Hash + Eq + PartialEq
 impl<T> FSM<T>
 where T: State + Debug + Clone + Hash + Eq + PartialEq
 {
-    fn state(&self) -> Option<&T>
+    fn state(&self) -> &T
     {
-        Some(&self.state)
+        &self.state
     }
+
 
     fn new(initial: &T) -> Self
     {
         FSM { state: initial.clone(), schema: HashMap::new() }
     }
+
 
     fn from_schema(initial: &T, schema: &[(T, T)]) -> Self
     {
@@ -35,6 +37,7 @@ where T: State + Debug + Clone + Hash + Eq + PartialEq
         Self{ state: initial.clone(), schema: s }
     }
 
+    
     fn change_state(&mut self, to_state: &T)
     {
         let key = (self.state.clone(), to_state.clone());
@@ -69,8 +72,9 @@ mod test {
     {
         let fsm =
             FSM::new(&TrafficLightState::RED);
-        assert_eq!(fsm.state().unwrap(), &TrafficLightState::RED);
+        assert_eq!(fsm.state(), &TrafficLightState::RED);
     }
+
 
     #[test]
     fn test_from_schema()
@@ -79,20 +83,21 @@ mod test {
 
         let mut fsm =
             FSM::from_schema(&TrafficLightState::RED, &schema);
-        assert_eq!(fsm.state().unwrap(), &TrafficLightState::RED);
+        assert_eq!(fsm.state(), &TrafficLightState::RED);
 
         fsm.change_state(&TrafficLightState::YELLOW);
-        assert_eq!(fsm.state().unwrap(), &TrafficLightState::YELLOW);
+        assert_eq!(fsm.state(), &TrafficLightState::YELLOW);
 
         fsm.change_state(&TrafficLightState::GREEN);
-        assert_eq!(fsm.state().unwrap(), &TrafficLightState::GREEN);
+        assert_eq!(fsm.state(), &TrafficLightState::GREEN);
 
         fsm.change_state(&TrafficLightState::YELLOW);
-        assert_eq!(fsm.state().unwrap(), &TrafficLightState::YELLOW);
+        assert_eq!(fsm.state(), &TrafficLightState::YELLOW);
 
         fsm.change_state(&TrafficLightState::RED);
-        assert_eq!(fsm.state().unwrap(), &TrafficLightState::RED);
+        assert_eq!(fsm.state(), &TrafficLightState::RED);
     }
+
 
     #[test]
     #[should_panic]
@@ -104,6 +109,7 @@ mod test {
             FSM::from_schema(&TrafficLightState::RED, &schema);
         fsm.change_state(&TrafficLightState::GREEN);
     }
+
 
     fn get_schema() -> Vec<(TrafficLightState, TrafficLightState)>
     {
